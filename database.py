@@ -2,10 +2,23 @@ import sqlite3
 import os
 from datetime import datetime
 
+# Define o caminho do banco de dados com base no ambiente
+# Usa o caminho relativo no localhost e um caminho absoluto no servidor ZimaOS
+server_ip = "192.168.15.17"
+current_host = os.getenv("HOSTNAME", "localhost")
+
+if current_host in ["localhost", "githubdev.app"]:
+    db_path = "data/vocabstack.db"
+else:
+    db_path = f"/app/data/vocabstack.db"
+
+os.makedirs(os.path.dirname(db_path), exist_ok=True)
+DATABASE_URL = db_path
+
 class DatabaseManager:
     def __init__(self):
         # No Docker, usamos a variável de ambiente definida no docker-compose
-        db_path = os.getenv("DATABASE_URL", "data/vocabstack.db")
+        db_path = os.getenv("DATABASE_URL", DATABASE_URL)
         os.makedirs(os.path.dirname(db_path), exist_ok=True)
         self.db_name = db_path
         self._create_tables()

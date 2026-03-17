@@ -2,8 +2,21 @@ import spacy
 from collections import Counter
 from nltk.corpus import stopwords
 import nltk
+import os
 
-nltk.download('stopwords', quiet=True)
+# Configurar o caminho do NLTK para o diretório pré-baixado
+nltk_data_path = os.getenv('NLTK_DATA', '/nlp_data/nltk_data')
+if nltk_data_path not in nltk.data.path:
+    nltk.data.path.insert(0, nltk_data_path)
+
+# Tentar usar os stopwords já baixados
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    try:
+        nltk.download('stopwords', quiet=True, download_dir=nltk_data_path)
+    except Exception as e:
+        print(f"⚠️ Aviso: Não foi possível baixar stopwords via NLTK - {str(e)}")
 
 class LanguageProcessor:
     _models = {}

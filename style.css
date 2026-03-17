@@ -1,0 +1,75 @@
+:root {
+    --primary: #2563eb;
+    --bg: #f8fafc;
+    --text: #1e293b;
+}
+
+body {
+    font-family: sans-serif;
+    background-color: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 500px; /* Perfeito para Mobile */
+}
+
+header { text-align: center; margin-bottom: 30px; }
+
+.upload-section, .card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    margin-bottom: 20px;
+}
+
+input, button {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: var(--primary);
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+}
+
+button:disabled { background-color: #94a3b8; }
+
+.word-cloud {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.word-badge {
+    background: #e2e8f0;
+    padding: 8px 15px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.9rem;
+}
+
+.word-count {
+    background: var(--primary);
+    color: white;
+    font-size: 0.75rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-weight: bold;
+}

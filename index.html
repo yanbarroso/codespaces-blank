@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vocabulab - Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Vocabulab</h1>
+            <p>Sua imersão em dados.</p>
+        </header>
+
+        <section class="upload-section">
+            <input type="text" id="titulo" placeholder="Título da obra (ex: Petit Prince)">
+            <input type="file" id="arquivo" accept=".pdf,.epub,.txt">
+            <button onclick="fazerUpload()" id="btnUpload">🚀 Processar Agora</button>
+        </section>
+
+        <section class="stats-section">
+            <div class="card">
+                <h3>Total de Palavras Únicas</h3>
+                <p id="totalPalavras">0</p>
+            </div>
+        </section>
+
+	<section class="stats-section">
+            <div class="card">
+                <h3>Top 10 Palavrass</h3>
+                <p id="top10">0</p>
+            </div>
+        </section>	
+
+        <section class="estante-section">
+            <h2>Sua Estante</h2>
+            <ul id="listaEstante">
+                </ul>
+        </section>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>
