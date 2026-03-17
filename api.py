@@ -57,3 +57,17 @@ def get_global_stats():
     except Exception as e:
         # Isso vai nos ajudar a ver o erro no JSON da API se algo falhar
         raise HTTPException(status_code=500, detail=str(e))
+
+@app.get("/stats/top-words")
+def get_top_words():
+    with db._get_connection() as conn:
+        cursor = conn.cursor()
+        # Agrupa por palavra, soma as frequências e ordena do maior para o menor
+        cursor.execute("""
+            SELECT palavra, SUM(frequencia) as total 
+            FROM palavras_vistas 
+            GROUP BY palavra 
+            ORDER BY total DESC 
+            LIMIT 10
+        """)
+        return [{"word": row[0], "count": row[1]} for row in cursor.fetchall()]
