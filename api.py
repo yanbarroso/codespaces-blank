@@ -1,7 +1,8 @@
-from fastapi import FastAPI, UploadFile, File, Form, HTTPException
+from fastapi import FastAPI, UploadFile, File, Form
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
+import sqlite3
 from readers import ReaderFactory
 from processors import LanguageProcessor
 from database import DatabaseManager
@@ -32,3 +33,24 @@ async def upload_obra(titulo: str = Form(...), arquivo: UploadFile = File(...)):
 @app.get("/estante")
 async def get_estante():
     return [{"titulo": r[0], "total": r[1], "data": r[2]} for r in db.listar_estante()]
+
+@app.get("/stats")
+def get_global_stats():
+    conn = sqlite3.connect('data/vocabulab.db')
+    cursor = conn.cursor()
+    
+    # 1. Total de obras processadas
+    cursor.execute("SELECT COUNT(*) FROM obras")
+    total_obras = cursor.fetchone()[0]
+    
+    # 2. Total de palavras ÚNICAS no seu vocabulário global
+    # Isso ignora se a palavra "le" aparece em 10 livros, conta como 1
+    cursor.execute("SELECT COUNT(DISTINCT palavra) FROM palavras")
+    vocabulario_unico = cursor.fetchone()[0]
+    
+    conn.close()
+    
+    return {
+        "total_obras": total_obras,
+        "vocabulario_unico": vocabulario_unico
+    }
