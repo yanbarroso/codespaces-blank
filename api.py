@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, Form
+from fastapi import FastAPI, UploadFile, File, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import shutil
 import os
@@ -36,21 +36,24 @@ async def get_estante():
 
 @app.get("/stats")
 def get_global_stats():
-    conn = sqlite3.connect('data/vocabulab.db')
-    cursor = conn.cursor()
-    
-    # 1. Total de obras processadas
-    cursor.execute("SELECT COUNT(*) FROM obras")
-    total_obras = cursor.fetchone()[0]
-    
-    # 2. Total de palavras ÚNICAS no seu vocabulário global
-    # Isso ignora se a palavra "le" aparece em 10 livros, conta como 1
-    cursor.execute("SELECT COUNT(DISTINCT palavra) FROM palavras")
-    vocabulario_unico = cursor.fetchone()[0]
-    
-    conn.close()
-    
-    return {
-        "total_obras": total_obras,
-        "vocabulario_unico": vocabulario_unico
-    }
+    # Em vez de sqlite3.connect(...), usamos o método do DatabaseManager
+    # que garante que estamos no arquivo certo e com as tabelas criadas.
+    try:
+        with db._get_connection() as conn:
+            cursor = conn.cursor()
+            
+            # 1. Total de obras
+            cursor.execute("SELECT COUNT(*) FROM obras")
+            total_obras = cursor.fetchone()[0]
+            
+            # 2. Total de palavras ÚNICAS
+            cursor.execute("SELECT COUNT(DISTINCT palavra) FROM palavras_vistas")
+            vocabulario_unico = cursor.fetchone()[0]
+            
+            return {
+                "total_obras": total_obras,
+                "vocabulario_unico": vocabulario_unico
+            }
+    except Exception as e:
+        # Isso vai nos ajudar a ver o erro no JSON da API se algo falhar
+        raise HTTPException(status_code=500, detail=str(e))
