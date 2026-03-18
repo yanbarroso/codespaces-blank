@@ -1,6 +1,7 @@
 import sqlite3
 import os
 from datetime import datetime
+import shutil
 
 # Define o caminho do banco de dados com base no ambiente
 # Usa o caminho relativo por padrão
@@ -68,3 +69,30 @@ class DatabaseManager:
             return conn.execute(
                 "SELECT titulo, total_palavras, data_leitura FROM obras"
             ).fetchall()
+
+    def realizar_backup(self, backup_dir="backups"):
+        """
+        Realiza um backup do banco de dados atual.
+        """
+        try:
+            os.makedirs(backup_dir, exist_ok=True)
+            backup_file = os.path.join(
+                backup_dir, f"backup_{datetime.now().strftime('%Y%m%d_%H%M%S')}.db"
+            )
+            shutil.copy2(self.db_name, backup_file)
+            print(f"Backup realizado com sucesso: {backup_file}")
+        except Exception as e:
+            print(f"Erro ao realizar backup: {e}")
+
+    def restaurar_backup(self, backup_file):
+        """
+        Restaura o banco de dados a partir de um arquivo de backup.
+        """
+        try:
+            if os.path.exists(backup_file):
+                shutil.copy2(backup_file, self.db_name)
+                print(f"Banco de dados restaurado com sucesso a partir de: {backup_file}")
+            else:
+                print(f"Arquivo de backup não encontrado: {backup_file}")
+        except Exception as e:
+            print(f"Erro ao restaurar backup: {e}")
