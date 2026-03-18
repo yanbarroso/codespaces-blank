@@ -38,15 +38,25 @@ COPY --from=builder /root/.cache /nlp_data/.cache
 # Copia o restante do código do projeto
 COPY . .
 
-# Ajusta permissões do app
-RUN chmod -R 755 /app /nlp_data
+# Cria diretórios necessários com permissões apropriadas
+RUN mkdir -p /app/data /app/tmp && \
+    chmod 755 /app /nlp_data && \
+    chmod 775 /app/data /app/tmp
+
+# Cria usuário não privilegiado para rodar a aplicação
+RUN useradd -m -u 1000 -s /sbin/nologin appuser && \
+    chown -R appuser:appuser /app /nlp_data
 
 # Configura variáveis de ambiente
 ENV NLTK_DATA=/nlp_data/nltk_data
-ENV HOME=/nlp_data
+ENV HOME=/app
+ENV PYTHONUNBUFFERED=1
+
+# Define o usuário não privilegiado
+USER appuser
 
 # Expõe a porta que o FastAPI vai rodar
 EXPOSE 8000
 
 # Comando para rodar a API usando o Uvicorn
-CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api:app", "--host", "0.0.0.0", "--port", "8000", "--log-level", "info"]

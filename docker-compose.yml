@@ -8,14 +8,33 @@ services:
       - "8000:8000"
     volumes:
       # Mapeia o banco de dados para fora do container para persistência
-      - ./data:/app/data
+      - ./data:/app/data:Z
+      - /tmp:/app/tmp
     environment:
       # Variável de ambiente para o código saber onde salvar o DB
       - DATABASE_URL=/app/data/vocabstack.db
     restart: always
-    user: "1000:1000" # Define um usuário não privilegiado para evitar problemas de permissão no ZimaOS
+    # Segurança: usar o usuário não privilegiado criado no Dockerfile
+    user: "appuser"
+    # Limitar capacidades do container (segurança)
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    # Fazer o sistema de arquivos root como read-only onde possível
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/tmp
+      - /run
     networks:
       - vocab-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
 
   nginx:
     image: nginx:latest
